@@ -9,5 +9,7 @@ namespace StudentCart.Repository.Business.Contracts
     public interface IStudentsCartManager
     {
         Task<List<String>> GetCategoriesList();
+        Task<String> SignUpProcess(String userName, String password);
+        Task<String> LogInProcess(String userName, String password);
     }
 }

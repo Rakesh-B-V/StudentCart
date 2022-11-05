@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentCart.Repository.Business.Contracts;
+using StudentCart.Repository.Business.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,7 +14,7 @@ namespace StudentCart.WebServices.Controllers
     //[Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class StudentsCartController : ControllerBase
+    public class StudentsCartController : StudentsCartBaseController
     {
         private readonly IStudentsCartManager _studentsCart;
 
@@ -33,12 +35,16 @@ namespace StudentCart.WebServices.Controllers
 
                 if(categoryList != null && categoryList.Any())
                 {
-                    return Ok(categoryList);
+                    httpResponse = GetSuccessResponse(categoryList);
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse(AppConstatnts.RECORDNOTFOUND, HttpStatusCode.NotFound);
                 }
             }
             catch (Exception ex)
             {
-
+                throw new Exception(ex.Message);
             }
             finally
             {
@@ -46,5 +52,70 @@ namespace StudentCart.WebServices.Controllers
             }
             return httpResponse;
         }
+
+        [HttpPost]
+        [Route("v{version:apiVersion}/SignUp")]
+        public async Task<IActionResult> SignUp([FromBody] SignUp signUp)
+        {
+            IActionResult httpResponse = null;
+            List<String> errorList = new List<String>();
+            String finalErrors = String.Empty;
+            try
+            {
+                if(ModelState.ErrorCount > 0)
+                {
+                    errorList = ModelState.ToList().Where(s=> s.Value.ValidationState.ToString() == "InValid").ToList().SelectMany(x => x.Value.Errors).ToList().Select(s => s.ErrorMessage).ToList();
+                    finalErrors = String.Join(",\n", errorList);
+                    //throw new CustomException(finalErrors);
+                }
+
+                var result = await _studentsCart.SignUpProcess(signUp.UserName, signUp.Password);
+
+                if(result != null && result.Contains(AppConstatnts.ACCOUNTCREATED))
+                {
+                    httpResponse = GetSuccessResponse(result);
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse(AppConstatnts.DUPLICATEUSER, HttpStatusCode.Forbidden);
+                }
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+
+            }
+            return httpResponse;
+        }
+
+
+        [HttpPost]
+        [Route("v{version:apiVersion}/LogIn")]
+        public async Task<IActionResult> LogIn([FromBody] LogIn logIn)
+        {
+            IActionResult httpResponse = null;
+            try
+            {
+                var result = await _studentsCart.LogInProcess(logIn.UserName, logIn.Password);
+                if(result != null && result.Contains("Successful"))
+                {
+                    httpResponse = GetSuccessResponse(result);
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse(result, HttpStatusCode.Unauthorized);
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return httpResponse;
+        }
+
     }
 }

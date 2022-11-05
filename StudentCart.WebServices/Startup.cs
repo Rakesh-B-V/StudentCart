@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using StudentCart.Repository.Business;
 using StudentCart.Repository.Business.Contracts;
 using StudentCart.Repository.Data;
@@ -12,6 +14,7 @@ using StudentCart.Repository.Data.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace StudentCart.WebServices
@@ -29,10 +32,23 @@ namespace StudentCart.WebServices
         public void ConfigureServices(IServiceCollection services)
         {
             var connString = Configuration.GetSection("ConnectionStrings").GetSection("connectionString").Value;
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.ConsentCookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
+
+            //services.AddControllers().AddControllersAsServices().ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+
+
             services.AddSingleton<IDatabaseCollection, DatabaseManager>(options => new DatabaseManager(connString));
             //services.AddControllersWithViews();
             services.AddTransient<IStudentsCartManager, StudentsCartManager>();
             services.AddTransient<IStudentsCartRepository, StudentsCartRepository>();
+
             services.AddMvc().AddMvcOptions(options =>
                             {
                                 options.MaxModelValidationErrors = 999999;
@@ -47,7 +63,7 @@ namespace StudentCart.WebServices
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -59,6 +75,7 @@ namespace StudentCart.WebServices
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            loggerFactory.AddLog4Net();
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
