@@ -2,6 +2,4 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/StudentsCart.TestProject/StudentsCart.TestProject.csproj
-/.vs/Agile/v16/.suo
-/.vs/StudentsCartSolution
+/StudentsCart.TestProject/obj/Debug/netcoreapp3.1/StudentsCart.TestProject.AssemblyInfo.cs
