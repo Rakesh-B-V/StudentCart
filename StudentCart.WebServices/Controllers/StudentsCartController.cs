@@ -66,7 +66,7 @@ namespace StudentCart.WebServices.Controllers
                 {
                     errorList = ModelState.ToList().Where(s=> s.Value.ValidationState.ToString() == "InValid").ToList().SelectMany(x => x.Value.Errors).ToList().Select(s => s.ErrorMessage).ToList();
                     finalErrors = String.Join(",\n", errorList);
-                    //throw new CustomException(finalErrors);
+                    throw new CustomException(finalErrors);
                 }
 
                 var result = await _studentsCart.SignUpProcess(signUp.UserName, signUp.Password);
@@ -101,7 +101,7 @@ namespace StudentCart.WebServices.Controllers
             try
             {
                 var result = await _studentsCart.LogInProcess(logIn.UserName, logIn.Password);
-                if(result != null && result.Contains("Successful"))
+                if(result != null && result.Contains(AppConstatnts.AUTHENTICATIONSUCCESSFUL))
                 {
                     httpResponse = GetSuccessResponse(result);
                 }
@@ -113,6 +113,65 @@ namespace StudentCart.WebServices.Controllers
             catch(Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+            return httpResponse;
+        }
+
+        [HttpGet]
+        [Route("v{version:apiVersion}/ProductDetails")]
+        public async Task<IActionResult> ProductDetails(String product)
+        {
+            IActionResult httpResponse = null;
+            Object finalResult = null;
+            try
+            {
+                if (!String.IsNullOrEmpty(product))
+                {
+                    switch (product)
+                    {
+                        case AppConstatnts.BICYCLES:
+                            {
+                                var result = await _studentsCart.BicycleDetails(product);
+                                finalResult = result;
+                                break;
+                            }
+                        case AppConstatnts.HOUSEHOLDITEMS:
+                            {
+                                var result = await _studentsCart.HouseItemDetails(product);
+                                finalResult = result;
+                                break;
+                            }
+                        case AppConstatnts.ACCOMODATIONSERVICES:
+                            {
+                                var result = await _studentsCart.AccomodationDetails(product);
+                                finalResult = result;
+                                break;
+                            }
+                        case AppConstatnts.BOOKS:
+                            {
+                                var result = await _studentsCart.BooksDetails(product);
+                                finalResult = result;
+                                break;
+                            }
+                    }
+                    if (finalResult != null)
+                    {
+                        httpResponse = GetSuccessResponse(finalResult);
+                    }
+                    else
+                    {
+                        httpResponse = GetSuccessResponse(finalResult, HttpStatusCode.NotFound);
+                    }
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+
             }
             return httpResponse;
         }
