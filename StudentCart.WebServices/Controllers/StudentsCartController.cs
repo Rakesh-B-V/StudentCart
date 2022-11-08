@@ -153,6 +153,11 @@ namespace StudentCart.WebServices.Controllers
                                 finalResult = result;
                                 break;
                             }
+                        default:
+                            { 
+                                finalResult = "Please Select the item from available Category only";
+                                break;
+                            }
                     }
                     if (finalResult != null)
                     {
@@ -162,6 +167,11 @@ namespace StudentCart.WebServices.Controllers
                     {
                         httpResponse = GetSuccessResponse(finalResult, HttpStatusCode.NotFound);
                     }
+                }
+                else
+                {
+                    finalResult = "Please Select the item from available Category only";
+                    httpResponse = GetSuccessResponse(finalResult, HttpStatusCode.NotFound);
                 }
                 
             }

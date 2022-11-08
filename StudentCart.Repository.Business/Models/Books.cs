@@ -14,7 +14,7 @@ namespace StudentCart.Repository.Business.Models
         public String Category { get; set; }
         public String OwnerNumber { get; set; }
         public String Address { get; set; }
-        public String Bookname { get; set; }
+        public String BookName { get; set; }
         public String Price { get; set; }
     }
 }
