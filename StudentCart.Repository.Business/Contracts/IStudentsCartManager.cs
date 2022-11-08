@@ -12,8 +12,8 @@ namespace StudentCart.Repository.Business.Contracts
         Task<String> SignUpProcess(String userName, String password);
         Task<String> LogInProcess(String userName, String password);
         Task<List<Bicycles>> BicycleDetails(String product);
-        Task<List<Bicycles>> HouseItemDetails(String product);
-        Task<List<Bicycles>> AccomodationDetails(String product);
-        Task<List<Bicycles>> BooksDetails(String product);
+        Task<List<HouseHoldItems>> HouseItemDetails(String product);
+        Task<List<AccomodationServices>> AccomodationDetails(String product);
+        Task<List<Books>> BooksDetails(String product);
     }
 }
