@@ -186,5 +186,66 @@ namespace StudentCart.WebServices.Controllers
             return httpResponse;
         }
 
+        [HttpDelete]
+        [Route("v{version:apiVersion}/DeleteProductDetailsAsync")]
+        public async Task<IActionResult> DeleteProductDetailsAsync(String category, String phoneNumber, String item)
+        {
+            String result = String.Empty;
+            IActionResult httpResponse;
+            try
+            {
+                if (!String.IsNullOrEmpty(category) && !String.IsNullOrEmpty(phoneNumber) /*&& !String.IsNullOrEmpty(item)*/)
+                {
+                    switch (category.ToLower())
+                    {
+                        case AppConstatnts.ACCOMODATIONSERVICES:
+                            {
+                                result = await _studentsCart.DeleteAccomodationService(phoneNumber, item, category);
+                                break;
+                            }
+                        case AppConstatnts.BICYCLES:
+                            {
+                                result = await _studentsCart.DeleteBicycle(phoneNumber, category);
+                                break;
+                            }
+                        case AppConstatnts.BOOKS:
+                            {
+                                result = await _studentsCart.DeleteBook(phoneNumber, item, category);
+                                break;
+                            }
+                        case AppConstatnts.HOUSEHOLDITEMS:
+                            {
+                                result = await _studentsCart.DeleteHouseHoldItems(phoneNumber, item, category);
+                                break;
+                            }
+                        default:
+                            {
+                                result = "Please select the right Category";
+                                httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    result = "Delete details should not be empty";
+                    httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
+                }
+                if (!String.IsNullOrEmpty(result) && result.Contains("Deleted Successfully"))
+                {
+                    httpResponse = GetSuccessResponse(result);
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return httpResponse;
+        }
+
     }
 }
