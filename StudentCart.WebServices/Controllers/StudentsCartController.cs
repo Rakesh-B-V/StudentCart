@@ -18,6 +18,7 @@ namespace StudentCart.WebServices.Controllers
     {
         private readonly IStudentsCartManager _studentsCart;
 
+
         public StudentsCartController(IStudentsCartManager studentsCart)
         {
             this._studentsCart = studentsCart;
@@ -182,6 +183,38 @@ namespace StudentCart.WebServices.Controllers
             finally
             {
 
+            }
+            return httpResponse;
+        }
+
+        [HttpPost]
+        [Route("v{version:apiVersion}/LogOut")]
+        public async Task<IActionResult> LogOut([FromBody] SignUp logout)
+        {
+            String result = String.Empty;
+            IActionResult httpResponse;
+            try
+            {
+                if (logout != null)
+                {
+                    result = await _studentsCart.LogOutProcess(logout.UserName, logout.Password);
+                    if (!String.IsNullOrEmpty(result) && result.Contains("Added Successfully"))
+                    {
+                        httpResponse = GetSuccessResponse(result);
+                    }
+                    else
+                    {
+                        httpResponse = GetSuccessResponse(result, HttpStatusCode.Unauthorized);
+                    }
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse("UserName and Password required", HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
             return httpResponse;
         }

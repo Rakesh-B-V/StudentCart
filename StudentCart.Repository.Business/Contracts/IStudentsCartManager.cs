@@ -15,5 +15,6 @@ namespace StudentCart.Repository.Business.Contracts
         Task<List<HouseHoldItems>> HouseItemDetails(String product);
         Task<List<AccomodationServices>> AccomodationDetails(String product);
         Task<List<Books>> BooksDetails(String product);
+        Task<String> LogOutProcess(String userName, String password);
     }
 }
