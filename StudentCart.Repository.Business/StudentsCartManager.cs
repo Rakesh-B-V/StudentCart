@@ -120,5 +120,113 @@ namespace StudentCart.Repository.Business
             var bookssList = booksCol.Aggregate().ToList();
             return bookssList;
         }
+        public Task<String> EditAccomodationService(String ownerNo, String itemType, String price, String category, String newContactNo)
+        {
+            try
+            {
+                var accomodationServicesCol = this._studentsCartRepo.GetCollectionIMongo<AccomodationServices>();
+                UpdateDefinition<AccomodationServices> update = null;
+                var filterCondition = Builders<AccomodationServices>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.ApartmentType == itemType);
+                if (!String.IsNullOrEmpty(newContactNo))
+                {
+                    update = Builders<AccomodationServices>.Update.Set(s => s.OwnerNumber, newContactNo)
+                                                                 .Set(s => s.Price, price);
+                }
+                else
+                {
+                    update = Builders<AccomodationServices>.Update.Set(s => s.Price, price);
+                }
+                var updateResult = accomodationServicesCol.UpdateOne(filterCondition, update);
+                if (updateResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.EDITACCOMODATIONSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.UPDATIONFAILED);
+        }
+        public Task<String> EditHouseHoldItems(String ownerNo, String itemType, String price, String category, String newContactNo)
+        {
+            try
+            {
+                var houseHoldItemsCol = this._studentsCartRepo.GetCollectionIMongo<HouseHoldItems>();
+                var sms = houseHoldItemsCol.Aggregate().ToList();
+                UpdateDefinition<HouseHoldItems> update = null;
+                var filterCondition = Builders<HouseHoldItems>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.ItemType == itemType);
+                if (!String.IsNullOrEmpty(newContactNo))
+                {
+                    update = Builders<HouseHoldItems>.Update.Set(s => s.OwnerNumber, newContactNo)
+                                                                 .Set(s => s.Price, price);
+                }
+                else
+                {
+                    update = Builders<HouseHoldItems>.Update.Set(s => s.Price, price);
+                }
+                var updateResult = houseHoldItemsCol.UpdateOne(filterCondition, update);
+                if (updateResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.EDITHOUSEHOLDITEMSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.UPDATIONFAILED);
+        }
+        public Task<String> EditBicycle(String ownerNo, String itemType, String price, String category, String newContactNo)
+        {
+            try
+            {
+                var bicyclesCol = this._studentsCartRepo.GetCollectionIMongo<Bicycles>();
+                UpdateDefinition<Bicycles> update = null;
+                var filterCondition = Builders<Bicycles>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower());
+                if (!String.IsNullOrEmpty(newContactNo))
+                {
+                    update = Builders<Bicycles>.Update.Set(s => s.OwnerNumber, newContactNo)
+                                                                 .Set(s => s.Price, price);
+                }
+                else
+                {
+                    update = Builders<Bicycles>.Update.Set(s => s.Price, price);
+                }
+                var updateResult = bicyclesCol.UpdateOne(filterCondition, update);
+                if (updateResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.EDITBICYCLESUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.UPDATIONFAILED);
+        }
+        public Task<String> EditBook(String ownerNo, String itemType, String price, String category, String newContactNo)
+        {
+            try
+            {
+                var booksCol = this._studentsCartRepo.GetCollectionIMongo<Books>();
+                UpdateDefinition<Books> update = null;
+                var filterCondition = Builders<Books>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.BookName == itemType);
+                if (!String.IsNullOrEmpty(newContactNo))
+                {
+                    update = Builders<Books>.Update.Set(s => s.OwnerNumber, newContactNo)
+                                                                 .Set(s => s.Price, price);
+                }
+                else
+                {
+                    update = Builders<Books>.Update.Set(s => s.Price, price);
+                }
+                var updateResult = booksCol.UpdateOne(filterCondition, update);
+                if (updateResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.EDITBOOKSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.UPDATIONFAILED);
+        }
     }
 }
