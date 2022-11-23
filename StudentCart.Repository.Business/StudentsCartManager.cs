@@ -120,6 +120,78 @@ namespace StudentCart.Repository.Business
             var bookssList = booksCol.Aggregate().ToList();
             return bookssList;
         }
+
+
+        public Task<String> DeleteAccomodationService(String ownerNo, String itemType, String category)
+        {
+            try
+            {
+                var accomodationServicesCol = this._studentsCartRepo.GetCollectionIMongo<AccomodationServices>();
+                var filterCondition = Builders<AccomodationServices>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.ApartmentType == itemType);
+
+                var deleteResult = accomodationServicesCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEACCOMODATIONSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        public Task<String> DeleteHouseHoldItems(String ownerNo, String itemType, String category)
+        {
+            try
+            {
+                var houseHoldItemsCol = this._studentsCartRepo.GetCollectionIMongo<HouseHoldItems>();
+                var filterCondition = Builders<HouseHoldItems>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.ItemType == itemType);
+                var deleteResult = houseHoldItemsCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEHOUSEHOLDITEMSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        public Task<String> DeleteBicycle(String ownerNo, String category)
+        {
+            try
+            {
+                var bicyclesCol = this._studentsCartRepo.GetCollectionIMongo<Bicycles>();
+                var filterCondition = Builders<Bicycles>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower());
+                var deleteResult = bicyclesCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEBICYCLESUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        public Task<String> DeleteBook(String ownerNo, String itemType, String category)
+        {
+            try
+            {
+                var booksCol = this._studentsCartRepo.GetCollectionIMongo<Books>();
+                var filterCondition = Builders<Books>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.BookName == itemType);
+                var deleteResult = booksCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEBOOKSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+
+
         /// <summary>
         /// This method is used to Logout the user. Mostly it's handeled in Front End, since we are exposing api, we need the username and password to Logout the requested user.
         /// </summary>
@@ -147,5 +219,6 @@ namespace StudentCart.Repository.Business
                 return AppConstatnts.AUTHENTICATIONFAILURE;
             }
         }
+
     }
 }
