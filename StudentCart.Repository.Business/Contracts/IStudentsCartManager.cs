@@ -15,10 +15,18 @@ namespace StudentCart.Repository.Business.Contracts
         Task<List<HouseHoldItems>> HouseItemDetails(String product);
         Task<List<AccomodationServices>> AccomodationDetails(String product);
         Task<List<Books>> BooksDetails(String product);
+
+        Task<String> EditAccomodationService(String ownerNo, String itemType, String price, String category, String newContactNo);
+        Task<String> EditHouseHoldItems(String ownerNo, String itemType, String price, String category, String newContactNo);
+        Task<String> EditBicycle(String ownerNo, String itemType, String price, String category, String newContactNo);
+        Task<String> EditBook(String ownerNo, String itemType, String price, String category, String newContactNo);
+
+
         Task<String> DeleteAccomodationService(String ownerNo, String itemType, String category);
         Task<String> DeleteHouseHoldItems(String ownerNo, String itemType, String category);
         Task<String> DeleteBicycle(String ownerNo, String category);
         Task<String> DeleteBook(String ownerNo, String itemType, String category);
         Task<String> LogOutProcess(String userName, String password);
+
     }
 }

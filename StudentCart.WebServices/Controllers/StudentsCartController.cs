@@ -186,6 +186,70 @@ namespace StudentCart.WebServices.Controllers
             }
             return httpResponse;
         }
+        [HttpPut]
+        [Route("v{version:apiVersion}/EditProductDetailsAsync")]
+        public async Task<IActionResult> EditProductDetailsAsync(String category, String itemType, [FromBody] UpdateItem updateDetails)
+        {
+            IActionResult httpResponse = null;
+            String result = String.Empty;
+            try
+            {
+                if (updateDetails != null)
+                {
+                    switch (category.ToLower())
+                    {
+                        case AppConstatnts.ACCOMODATIONSERVICES:
+                            {
+                                result = await _studentsCart.EditAccomodationService(updateDetails.ContactNumber, itemType,
+                                                                                        updateDetails.Price, category, updateDetails.NewContactNumber);
+                                break;
+                            }
+                        case AppConstatnts.BICYCLES:
+                            {
+                                result = await _studentsCart.EditBicycle(updateDetails.ContactNumber, itemType,
+                                                                                        updateDetails.Price, category, updateDetails.NewContactNumber);
+                                break;
+                            }
+                        case AppConstatnts.BOOKS:
+                            {
+                                result = await _studentsCart.EditBook(updateDetails.ContactNumber, itemType,
+                                                                                        updateDetails.Price, category, updateDetails.NewContactNumber);
+                                break;
+                            }
+                        case AppConstatnts.HOUSEHOLDITEMS:
+                            {
+                                result = await _studentsCart.EditHouseHoldItems(updateDetails.ContactNumber, itemType,
+                                                                                        updateDetails.Price, category, updateDetails.NewContactNumber);
+                                break;
+                            }
+                        default:
+                            {
+                                result = "Please select the right Category";
+                                httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    result = "Update details should not be empty";
+                    httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
+                }
+                if (!String.IsNullOrEmpty(result) && result.Contains("Edited Successfully"))
+                {
+                    httpResponse = GetSuccessResponse(result);
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return httpResponse;
+        }
 
 
         [HttpPost]
