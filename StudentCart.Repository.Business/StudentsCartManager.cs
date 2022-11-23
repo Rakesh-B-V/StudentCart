@@ -1,4 +1,4 @@
-﻿using MongoDB.Driver;
+using MongoDB.Driver;
 using StudentCart.Repository.Business.Contracts;
 using StudentCart.Repository.Business.Models;
 using StudentCart.Repository.Data.Contracts;
@@ -120,22 +120,22 @@ namespace StudentCart.Repository.Business
             var bookssList = booksCol.Aggregate().ToList();
             return bookssList;
         }
-        public Task<String> EditAccomodationService(String ownerNo, String itemType, String price, String category, String newContactNo)
+ public Task<String> EditAccomodationService(String ownerNo, String itemType, String price,String category, String newContactNo)
         {
             try
             {
                 var accomodationServicesCol = this._studentsCartRepo.GetCollectionIMongo<AccomodationServices>();
                 UpdateDefinition<AccomodationServices> update = null;
-                var filterCondition = Builders<AccomodationServices>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                var filterCondition = Builders<AccomodationServices>.Filter.Where(s =>s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
                                                                                       && s.ApartmentType == itemType);
                 if (!String.IsNullOrEmpty(newContactNo))
                 {
-                    update = Builders<AccomodationServices>.Update.Set(s => s.OwnerNumber, newContactNo)
-                                                                 .Set(s => s.Price, price);
+                     update = Builders<AccomodationServices>.Update.Set(s => s.OwnerNumber, newContactNo)
+                                                                  .Set(s => s.Price, price);
                 }
                 else
                 {
-                    update = Builders<AccomodationServices>.Update.Set(s => s.Price, price);
+                     update = Builders<AccomodationServices>.Update.Set(s => s.Price, price);
                 }
                 var updateResult = accomodationServicesCol.UpdateOne(filterCondition, update);
                 if (updateResult.IsAcknowledged)
@@ -166,7 +166,7 @@ namespace StudentCart.Repository.Business
                     update = Builders<HouseHoldItems>.Update.Set(s => s.Price, price);
                 }
                 var updateResult = houseHoldItemsCol.UpdateOne(filterCondition, update);
-                if (updateResult.IsAcknowledged)
+                if(updateResult.IsAcknowledged)
                     return Task.FromResult(AppConstatnts.EDITHOUSEHOLDITEMSUCCESSFUL);
             }
             catch (Exception ex)
@@ -227,6 +227,102 @@ namespace StudentCart.Repository.Business
                 throw new Exception(ex.Message);
             }
             return Task.FromResult(AppConstatnts.UPDATIONFAILED);
+        }
+
+        public Task<String> DeleteAccomodationService(String ownerNo, String itemType, String category)
+        {
+            try
+            {
+                var accomodationServicesCol = this._studentsCartRepo.GetCollectionIMongo<AccomodationServices>();
+                var filterCondition = Builders<AccomodationServices>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.ApartmentType == itemType);
+
+                var deleteResult = accomodationServicesCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEACCOMODATIONSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        public Task<String> DeleteHouseHoldItems(String ownerNo, String itemType,String category)
+        {
+            try
+            {
+                var houseHoldItemsCol = this._studentsCartRepo.GetCollectionIMongo<HouseHoldItems>();
+                var filterCondition = Builders<HouseHoldItems>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.ItemType == itemType);
+                var deleteResult = houseHoldItemsCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEHOUSEHOLDITEMSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        public Task<String> DeleteBicycle(String ownerNo, String category)
+        {
+            try
+            {
+                var bicyclesCol = this._studentsCartRepo.GetCollectionIMongo<Bicycles>();
+                var filterCondition = Builders<Bicycles>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower());
+                var deleteResult = bicyclesCol.DeleteOne(filterCondition);
+                if (deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEBICYCLESUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        public Task<String> DeleteBook(String ownerNo, String itemType, String category)
+        {
+            try
+            {
+                var booksCol = this._studentsCartRepo.GetCollectionIMongo<Books>();
+                var filterCondition = Builders<Books>.Filter.Where(s => s.OwnerNumber == ownerNo && s.Category.ToLower() == category.ToLower()
+                                                                                      && s.BookName == itemType);
+                var deleteResult = booksCol.DeleteOne(filterCondition);
+                if(deleteResult.IsAcknowledged)
+                    return Task.FromResult(AppConstatnts.DELETEBOOKSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+        /// <summary>
+        /// This method is used to Logout the user. Mostly it's handeled in Front End, since we are exposing api, we need the username and password to Logout the requested user.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<String> LogOutProcess(String userName, String password)
+        {
+            var signUpCol = this._studentsCartRepo.GetCollectionIMongo<SignUp>();
+            var usersList = signUpCol.Aggregate().ToList();
+            if (usersList.Select(s => s.UserName).Contains(userName))
+            {
+                if (usersList.Where(s => s.UserName == userName).Any(s => s.Password == password))
+                {
+                    var filterCondition = Builders<SignUp>.Filter.Where(s => s.UserName == userName && s.Password == password);
+                    var update = Builders<SignUp>.Update.Set(s => s.IsSessionActive, false);
+                    signUpCol.UpdateOne(filterCondition, update);
+                    return AppConstatnts.LOGOUTSUCCESSFUL;
+                }
+                else
+                    return AppConstatnts.AUTHENTICATIONFAILURE;
+            }
+            else
+            {
+                return AppConstatnts.AUTHENTICATIONFAILURE;
+            }
         }
     }
 }
