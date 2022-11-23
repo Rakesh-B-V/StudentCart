@@ -186,5 +186,65 @@ namespace StudentCart.WebServices.Controllers
             return httpResponse;
         }
 
+        [HttpPost]
+        [Route("v{version:apiVersion}/AddProductAsync")]
+        public async Task<IActionResult> AddProductAsync(String productName, [FromBody] Dictionary<String, String> details)
+        {
+            IActionResult httpResponse = null;
+            String result = String.Empty;
+            try
+            {
+                if (!String.IsNullOrEmpty(productName))
+                {
+                    switch (productName.ToLower())
+                    {
+                        case AppConstatnts.ACCOMODATIONSERVICES:
+                            {
+                                result = await _studentsCart.AddAccomodationService(details);
+                                break;
+                            }
+                        case AppConstatnts.BICYCLES:
+                            {
+                                result = await _studentsCart.AddBicycle(details);
+                                break;
+                            }
+                        case AppConstatnts.HOUSEHOLDITEMS:
+                            {
+                                result = await _studentsCart.AddHouseHoldItems(details);
+                                break;
+                            }
+                        case AppConstatnts.BOOKS:
+                            {
+                                result = await _studentsCart.AddBook(details);
+                                break;
+                            }
+                        default:
+                            {
+                                result = "Please Select only available Products";
+                                httpResponse = GetSuccessResponse(result, HttpStatusCode.NotFound);
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    result = "Product Name should not be empty";
+                    httpResponse = GetSuccessResponse(result, HttpStatusCode.NotFound);
+                }
+                if (!String.IsNullOrEmpty(result) && result.Contains("Added Successfully"))
+                {
+                    httpResponse = GetSuccessResponse(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+
+            }
+            return httpResponse;
+        }
     }
 }

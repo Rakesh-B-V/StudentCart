@@ -120,5 +120,94 @@ namespace StudentCart.Repository.Business
             var bookssList = booksCol.Aggregate().ToList();
             return bookssList;
         }
+        public Task<String> AddBook(Dictionary<String, String> book)
+        {
+            try
+            {
+                var booksCol = this._studentsCartRepo.GetCollectionIMongo<Books>();
+                Books bookItem = new Books()
+                {
+                    Address = book["Address"],
+                    BookName = book["BookName"],
+                    Category = book["Category"],
+                    OwnerName = book["OwnerName"],
+                    OwnerNumber = book["OwnerNumber"],
+                    Price = book["Price"]
+                };
+                booksCol.InsertOneAsync(bookItem);
+                return Task.FromResult(AppConstatnts.ADDBOOKSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public Task<String> AddBicycle(Dictionary<String, String> bicycle)
+        {
+            try
+            {
+                var bicycleCol = this._studentsCartRepo.GetCollectionIMongo<Bicycles>();
+                Bicycles bicycleItem = new Bicycles()
+                {
+                    Category = bicycle["Category"],
+                    OwnerName = bicycle["OwnerName"],
+                    OwnerNumber = bicycle["OwnerNumber"],
+                    Price = bicycle["Price"]
+                };
+                bicycleCol.InsertOneAsync(bicycleItem);
+                return Task.FromResult(AppConstatnts.ADDBICYCLESUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public Task<String> AddHouseHoldItems(Dictionary<String, String> houseHoldItm)
+        {
+            try
+            {
+                var houseHoldItemCol = this._studentsCartRepo.GetCollectionIMongo<HouseHoldItems>();
+                HouseHoldItems houseHoldItem = new HouseHoldItems()
+                {
+                    Category = houseHoldItm["Category"],
+                    OwnerName = houseHoldItm["OwnerName"],
+                    OwnerNumber = houseHoldItm["OwnerNumber"],
+                    Price = houseHoldItm["Price"],
+                    Address = houseHoldItm["Address"],
+                    ItemType = houseHoldItm["ItemType"]
+                };
+                houseHoldItemCol.InsertOneAsync(houseHoldItem);
+                return Task.FromResult(AppConstatnts.ADDHOUSEHOLDITEMSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public Task<String> AddAccomodationService(Dictionary<String, String> accomodationServices)
+        {
+            try
+            {
+                var accomodationServicesCol = this._studentsCartRepo.GetCollectionIMongo<AccomodationServices>();
+                AccomodationServices accomodationServicesInfo = new AccomodationServices()
+                {
+                    Category = accomodationServices["Category"],
+                    OwnerName = accomodationServices["OwnerName"],
+                    OwnerNumber = accomodationServices["OwnerNumber"],
+                    Price = accomodationServices["Price"],
+                    Address = accomodationServices["Address"],
+                    ApartmentType = accomodationServices["ApartmentType"]
+                };
+                accomodationServicesCol.InsertOneAsync(accomodationServicesInfo);
+                return Task.FromResult(AppConstatnts.ADDACCOMODATIONSUCCESSFUL);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

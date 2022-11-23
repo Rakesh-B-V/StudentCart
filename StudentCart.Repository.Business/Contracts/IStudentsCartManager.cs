@@ -15,5 +15,9 @@ namespace StudentCart.Repository.Business.Contracts
         Task<List<HouseHoldItems>> HouseItemDetails(String product);
         Task<List<AccomodationServices>> AccomodationDetails(String product);
         Task<List<Books>> BooksDetails(String product);
+        Task<String> AddBook(Dictionary<String, String> book);
+        Task<String> AddBicycle(Dictionary<String, String> bicycle);
+        Task<String> AddHouseHoldItems(Dictionary<String, String> houseHoldItem);
+        Task<String> AddAccomodationService(Dictionary<String, String> accomodationServices);
     }
 }
