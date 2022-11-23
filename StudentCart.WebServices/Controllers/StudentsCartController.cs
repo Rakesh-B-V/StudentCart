@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using StudentCart.Repository.Business.Contracts;
 using StudentCart.Repository.Business.Models;
 using System;
@@ -17,6 +17,7 @@ namespace StudentCart.WebServices.Controllers
     public class StudentsCartController : StudentsCartBaseController
     {
         private readonly IStudentsCartManager _studentsCart;
+
 
         public StudentsCartController(IStudentsCartManager studentsCart)
         {
@@ -186,7 +187,39 @@ namespace StudentCart.WebServices.Controllers
             return httpResponse;
         }
 
-        [HttpDelete]
+
+        [HttpPost]
+        [Route("v{version:apiVersion}/LogOut")]
+        public async Task<IActionResult> LogOut([FromBody] SignUp logout)
+        {
+            String result = String.Empty;
+            IActionResult httpResponse;
+            try
+            {
+                if(logout != null)
+                {
+                    result = await _studentsCart.LogOutProcess(logout.UserName, logout.Password);
+                    if (!String.IsNullOrEmpty(result) && result.Contains("Added Successfully"))
+                    {
+                        httpResponse = GetSuccessResponse(result);
+                    }
+                    else
+                    {
+                        httpResponse = GetSuccessResponse(result, HttpStatusCode.Unauthorized);
+                    }
+                }
+                else
+                {
+                    httpResponse = GetSuccessResponse("UserName and Password required", HttpStatusCode.Unauthorized);
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return httpResponse;
+        }   
+         [HttpDelete]
         [Route("v{version:apiVersion}/DeleteProductDetailsAsync")]
         public async Task<IActionResult> DeleteProductDetailsAsync(String category, String phoneNumber, String item)
         {
@@ -246,6 +279,6 @@ namespace StudentCart.WebServices.Controllers
             }
             return httpResponse;
         }
-
-    }
+        }
+        
 }

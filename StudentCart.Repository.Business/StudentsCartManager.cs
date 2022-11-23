@@ -121,6 +121,7 @@ namespace StudentCart.Repository.Business
             return bookssList;
         }
 
+
         public Task<String> DeleteAccomodationService(String ownerNo, String itemType, String category)
         {
             try
@@ -188,6 +189,35 @@ namespace StudentCart.Repository.Business
                 throw new Exception(ex.Message);
             }
             return Task.FromResult(AppConstatnts.DELETIONFAILED);
+        }
+
+
+        /// <summary>
+        /// This method is used to Logout the user. Mostly it's handeled in Front End, since we are exposing api, we need the username and password to Logout the requested user.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<String> LogOutProcess(String userName, String password)
+        {
+            var signUpCol = this._studentsCartRepo.GetCollectionIMongo<SignUp>();
+            var usersList = signUpCol.Aggregate().ToList();
+            if (usersList.Select(s => s.UserName).Contains(userName))
+            {
+                if (usersList.Where(s => s.UserName == userName).Any(s => s.Password == password))
+                {
+                    var filterCondition = Builders<SignUp>.Filter.Where(s => s.UserName == userName && s.Password == password);
+                    var update = Builders<SignUp>.Update.Set(s => s.IsSessionActive, false);
+                    signUpCol.UpdateOne(filterCondition, update);
+                    return AppConstatnts.LOGOUTSUCCESSFUL;
+                }
+                else
+                    return AppConstatnts.AUTHENTICATIONFAILURE;
+            }
+            else
+            {
+                return AppConstatnts.AUTHENTICATIONFAILURE;
+            }
         }
 
     }

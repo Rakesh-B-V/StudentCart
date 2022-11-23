@@ -1,4 +1,4 @@
-﻿using StudentCart.Repository.Business.Models;
+using StudentCart.Repository.Business.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,5 +19,6 @@ namespace StudentCart.Repository.Business.Contracts
         Task<String> DeleteHouseHoldItems(String ownerNo, String itemType, String category);
         Task<String> DeleteBicycle(String ownerNo, String category);
         Task<String> DeleteBook(String ownerNo, String itemType, String category);
+        Task<String> LogOutProcess(String userName, String password);
     }
 }
