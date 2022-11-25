@@ -33,13 +33,15 @@ namespace StudentCart.WebServices.Controllers
             var result = String.Empty;
             try
             {
-                if(ModelState.ErrorCount > 0)
-                {
-                    errorList = ModelState.ToList().Where(s=> s.Value.ValidationState.ToString() == "InValid").ToList().SelectMany(x => x.Value.Errors).ToList().Select(s => s.ErrorMessage).ToList();
-                    finalErrors = String.Join(",\n", errorList);
-                    throw new CustomException(finalErrors);
-                }
-                if(signUp != null)
+                //if(ModelState.ErrorCount > 0)
+                //{
+                //    errorList = ModelState.ToList().Where(s=> s.Value.ValidationState.ToString() == "InValid").ToList().SelectMany(x => x.Value.Errors).ToList().Select(s => s.ErrorMessage).ToList();
+                //    finalErrors = String.Join(",\n", errorList);
+                //    //throw new CustomException(finalErrors);
+                //    httpResponse = GetSuccessResponse(finalErrors, HttpStatusCode.BadRequest);
+                //    return httpResponse;
+                //}
+                if (signUp != null)
                 {
                     result = await _studentsCart.SignUpProcess(signUp.UserName, signUp.Password);
                 }
@@ -48,7 +50,7 @@ namespace StudentCart.WebServices.Controllers
                     httpResponse = GetSuccessResponse(AppConstatnts.USERNAMEMANDATORY, HttpStatusCode.Forbidden);
                 }
 
-                if(result != null && result.Contains(AppConstatnts.ACCOUNTCREATED))
+                if (result != null && result.Contains(AppConstatnts.ACCOUNTCREATED))
                 {
                     httpResponse = GetSuccessResponse(result);
                 }
@@ -57,7 +59,7 @@ namespace StudentCart.WebServices.Controllers
                     httpResponse = GetSuccessResponse(AppConstatnts.DUPLICATEUSER, HttpStatusCode.Forbidden);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -77,7 +79,7 @@ namespace StudentCart.WebServices.Controllers
             try
             {
                 var result = await _studentsCart.LogInProcess(logIn.UserName, logIn.Password);
-                if(result != null && result.Contains(AppConstatnts.AUTHENTICATIONSUCCESSFUL))
+                if (result != null && result.Contains(AppConstatnts.AUTHENTICATIONSUCCESSFUL))
                 {
                     httpResponse = GetSuccessResponse(result);
                 }
@@ -86,7 +88,7 @@ namespace StudentCart.WebServices.Controllers
                     httpResponse = GetSuccessResponse(result, HttpStatusCode.Unauthorized);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -159,8 +161,8 @@ namespace StudentCart.WebServices.Controllers
                                 break;
                             }
                         default:
-                            { 
-                                finalResult = "Please Select the item from available Category only";
+                            {
+                                finalResult = AppConstatnts.SELECTAVAILABLECATEGORY;
                                 break;
                             }
                     }
@@ -175,12 +177,12 @@ namespace StudentCart.WebServices.Controllers
                 }
                 else
                 {
-                    finalResult = "Please Select the item from available Category only";
+                    finalResult = AppConstatnts.SELECTAVAILABLECATEGORY;
                     httpResponse = GetSuccessResponse(finalResult, HttpStatusCode.NotFound);
                 }
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -193,7 +195,7 @@ namespace StudentCart.WebServices.Controllers
 
         [HttpPost]
         [Route("v{version:apiVersion}/AddProductAsync")]
-        public async Task<IActionResult> AddProductAsync(String productName,[FromBody] Dictionary<String,String> details)
+        public async Task<IActionResult> AddProductAsync(String productName, [FromBody] Dictionary<String, String> details)
         {
             IActionResult httpResponse = null;
             String result = String.Empty;
@@ -225,7 +227,7 @@ namespace StudentCart.WebServices.Controllers
                             }
                         default:
                             {
-                                result = "Please Select only available Products";
+                                result = AppConstatnts.SELECTAVAILABLEPRODUCTS;
                                 httpResponse = GetSuccessResponse(result, HttpStatusCode.NotFound);
                                 break;
                             }
@@ -233,10 +235,10 @@ namespace StudentCart.WebServices.Controllers
                 }
                 else
                 {
-                    result = "Product Name should not be empty";
+                    result = AppConstatnts.PRODUCTNAMEREQUIRED;
                     httpResponse = GetSuccessResponse(result, HttpStatusCode.NotFound);
                 }
-                if(!String.IsNullOrEmpty(result) && result.Contains("Added Successfully"))
+                if (!String.IsNullOrEmpty(result) && result.Contains("Added Successfully"))
                 {
                     httpResponse = GetSuccessResponse(result);
                 }
@@ -259,13 +261,13 @@ namespace StudentCart.WebServices.Controllers
             String result = String.Empty;
             try
             {
-                if(updateDetails != null)
+                if (updateDetails != null)
                 {
                     switch (category.ToLower())
                     {
-                        case AppConstatnts.ACCOMODATIONSERVICES :
+                        case AppConstatnts.ACCOMODATIONSERVICES:
                             {
-                                result = await _studentsCart.EditAccomodationService(updateDetails.ContactNumber, itemType, 
+                                result = await _studentsCart.EditAccomodationService(updateDetails.ContactNumber, itemType,
                                                                                         updateDetails.Price, category, updateDetails.NewContactNumber);
                                 break;
                             }
@@ -289,7 +291,7 @@ namespace StudentCart.WebServices.Controllers
                             }
                         default:
                             {
-                                result = "Please select the right Category";
+                                result = AppConstatnts.SELECTAVAILABLECATEGORY;
                                 httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
                                 break;
                             }
@@ -297,7 +299,7 @@ namespace StudentCart.WebServices.Controllers
                 }
                 else
                 {
-                    result = "Update details should not be empty";
+                    result = AppConstatnts.UPDATEDETAILSREQUIRED;
                     httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
                 }
                 if (!String.IsNullOrEmpty(result) && result.Contains("Edited Successfully"))
@@ -309,7 +311,7 @@ namespace StudentCart.WebServices.Controllers
                     httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -349,7 +351,7 @@ namespace StudentCart.WebServices.Controllers
                             }
                         default:
                             {
-                                result = "Please select the right Category";
+                                result = AppConstatnts.SELECTAVAILABLECATEGORY;
                                 httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
                                 break;
                             }
@@ -357,7 +359,7 @@ namespace StudentCart.WebServices.Controllers
                 }
                 else
                 {
-                    result = "Delete details should not be empty";
+                    result = AppConstatnts.DELETEDETAILSREQUIRED;
                     httpResponse = GetSuccessResponse(result, HttpStatusCode.NotModified);
                 }
                 if (!String.IsNullOrEmpty(result) && result.Contains("Deleted Successfully"))
@@ -383,7 +385,7 @@ namespace StudentCart.WebServices.Controllers
             IActionResult httpResponse;
             try
             {
-                if(logout != null)
+                if (logout != null)
                 {
                     result = await _studentsCart.LogOutProcess(logout.UserName, logout.Password);
                     if (!String.IsNullOrEmpty(result) && result.Contains("Added Successfully"))
@@ -397,10 +399,10 @@ namespace StudentCart.WebServices.Controllers
                 }
                 else
                 {
-                    httpResponse = GetSuccessResponse("UserName and Password required", HttpStatusCode.Unauthorized);
+                    httpResponse = GetSuccessResponse(AppConstatnts.USERNAMEMANDATORY, HttpStatusCode.Unauthorized);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }

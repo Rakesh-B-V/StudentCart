@@ -34,5 +34,10 @@ namespace StudentCart.Repository.Business.Models
         public const String DELETEHOUSEHOLDITEMSUCCESSFUL = "HouseholdItem Deleted Successfully";
         public const String DELETEBICYCLESUCCESSFUL = "Bicycle Deleted Successfully";
         public const String DELETIONFAILED = "Failed to Delete";
+        public const String SELECTAVAILABLEPRODUCTS = "Please Select the item from available Category only";
+        public const String PRODUCTNAMEREQUIRED = "Product Name should not be empty";
+        public const String SELECTAVAILABLECATEGORY = "Please select the right Category";
+        public const String UPDATEDETAILSREQUIRED = "Update details should not be empty";
+        public const String DELETEDETAILSREQUIRED = "Delete details should not be empty";
     }
 }
