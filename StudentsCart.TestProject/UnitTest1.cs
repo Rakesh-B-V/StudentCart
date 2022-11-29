@@ -18,38 +18,6 @@ namespace StudentsCart.TestProject
         {
             _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
         }
-        [Fact]
-        public async Task CategoryDetails_Returns_TrueResult()
-        {
-            var expectedOutput = new List<String>() { "Bicycles", "AccomodationServices", "HouseHoldItems", "Books" };
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
-            _mockIStudentsCartManager.Setup(repo => repo.GetCategoriesList()).ReturnsAsync(expectedOutput);
-
-            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
-
-            var result = await studentsCartController.CategoryDetails();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<String>>(okResult.Value);
-            var category = returnValue.FirstOrDefault();
-            Assert.Equal("Bicycles", category);
-        }
-
-        [Fact]
-        public async Task CategoryDetails_Returns_FalseResult()
-        {
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
-            _mockIStudentsCartManager.Setup(repo => repo.GetCategoriesList())
-                .ReturnsAsync((List<String>)null);
-
-            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
-
-            //var result = await studentsCartController.CategoryDetails();
-
-            var result = await studentsCartController.CategoryDetails();
-
-            Assert.IsType<ObjectResult>(result);
-        }
 
         [Fact]
         public async Task SignUpProcess_Returns_TrueResult()
@@ -60,7 +28,7 @@ namespace StudentsCart.TestProject
                 Password = "rAgjuhu67",
                 UserName = "marietgrg"
             };
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+
             _mockIStudentsCartManager.Setup(repo => repo.SignUpProcess(signUp.UserName, signUp.Password)).ReturnsAsync(expectedOutput);
 
             var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
@@ -76,7 +44,7 @@ namespace StudentsCart.TestProject
         public async Task SignUpProcess_Returns_FalseResult()
         {
             var expectedOutput = AppConstatnts.DUPLICATEUSER;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+
             var signup = new SignUp()
             {
                 Password = "rAgjuhu67",
@@ -92,11 +60,12 @@ namespace StudentsCart.TestProject
             var returnValue = Assert.IsType<String>(okResult.Value);
             Assert.Equal("User name already exists! Please modify the User name", returnValue);
         }
+
         [Fact]
         public async Task Login_Returns_TrueResult()
         {
             var expectedOutput = new String("Authentication Successful");
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+
             var logIn = new LogIn()
             {
                 Password = "rAgjuhu67",
@@ -119,7 +88,7 @@ namespace StudentsCart.TestProject
         public async Task Login_Returns_FalseResult()
         {
             var expectedOutput = new String("Incorrect UserName or Password");
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+
             var logIn = new LogIn()
             {
                 Password = null,
@@ -137,12 +106,47 @@ namespace StudentsCart.TestProject
             var returnValue = Assert.IsType<String>(Result.Value);
             Assert.Equal("Incorrect UserName or Password", returnValue);
         }
+        [Fact]
+        public async Task CategoryDetails_Returns_FalseResult()
+        {
+            //Arrange
+            _mockIStudentsCartManager.Setup(repo => repo.GetCategoriesList())
+                .ReturnsAsync((List<String>)null);
+            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
+
+            //Act
+            var result = await studentsCartController.CategoryDetails();
+
+            //Assert
+            Assert.IsType<ObjectResult>(result);
+        }
+
+        
+        [Fact]
+        public async Task CategoryDetails_Returns_TrueResult()
+        {
+            //Arrange
+            var expectedOutput = new List<String>() { "Bicycles", "AccomodationServices", "HouseHoldItems", "Books" };
+            _mockIStudentsCartManager.Setup(repo => repo.GetCategoriesList()).ReturnsAsync(expectedOutput);
+            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
+
+            //Act
+            var result = await studentsCartController.CategoryDetails();
+
+            //Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<String>>(okResult.Value);
+            var category = returnValue.FirstOrDefault();
+            Assert.Equal("Bicycles", category);
+        }
+
+        
 
         [Fact]
         public async Task ProductDetails_Returns_TrueResult()
         {
 
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+            
             var bicyclesList = new List<Bicycles>();
             var bicycle1 = new Bicycles()
             {
@@ -188,7 +192,7 @@ namespace StudentsCart.TestProject
         public async Task ProductDetails_Returns_FalseResult()
         {
 
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+            
             Object expectedOutput = AppConstatnts.SELECTAVAILABLECATEGORY;
             _mockIStudentsCartManager.Setup(repo => repo.BicycleDetails("")).ReturnsAsync(new List<Bicycles>());
 
@@ -202,10 +206,93 @@ namespace StudentsCart.TestProject
 
         }
         [Fact]
+        public async Task AddProductAsync_Returns_TrueResult()
+        {
+            var expectedOutput = AppConstatnts.ADDACCOMODATIONSUCCESSFUL;
+
+            var productName = "AccomodationServices";
+            Dictionary<String, String> details = new Dictionary<string, string>();
+            details.Add("OwnerName", "Boss");
+            details.Add("OwnerNumber", "0987215643");
+            details.Add("Address", "Kilkenny");
+            details.Add("ApartmentType", "Three Room");
+            details.Add("Price", "1200 Euro/Month");
+
+            _mockIStudentsCartManager.Setup(repo => repo.AddAccomodationService(details)).ReturnsAsync(expectedOutput);
+
+            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
+
+            var result = await studentsCartController.AddProductAsync(productName, details);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<String>(okResult.Value);
+            Assert.Equal(AppConstatnts.ADDACCOMODATIONSUCCESSFUL, returnValue);
+        }
+        [Fact]
+        public async Task AddProductAsync_Returns_FalseResult()
+        {
+            var expectedOutput = AppConstatnts.SELECTAVAILABLEPRODUCTS;
+
+            var productName = "Buses";
+            Dictionary<String, String> details = new Dictionary<string, string>();
+
+            _mockIStudentsCartManager.Setup(repo => repo.AddAccomodationService(details)).ReturnsAsync(expectedOutput);
+
+            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
+
+            var result = await studentsCartController.AddProductAsync(productName, details);
+
+            var okResult = Assert.IsType<ObjectResult>(result);
+            var returnValue = Assert.IsType<String>(okResult.Value);
+            Assert.Equal(AppConstatnts.SELECTAVAILABLEPRODUCTS, returnValue);
+        }
+
+        [Fact]
+        public async Task EditProductDetailsAsync_Returns_TrueResult()
+        {
+            var expectedOutput = AppConstatnts.EDITACCOMODATIONSUCCESSFUL;
+
+            UpdateItem updateDetails = new UpdateItem()
+            {
+                ContactNumber = "0764957567",
+                NewContactNumber = "0879915157",
+                Price = "130 Euro"
+            };
+
+            _mockIStudentsCartManager.Setup(repo => repo.EditAccomodationService(updateDetails.ContactNumber, "camera", updateDetails.Price,
+                                                    AppConstatnts.ACCOMODATIONSERVICES, updateDetails.NewContactNumber)).ReturnsAsync(expectedOutput);
+
+            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
+
+            var result = await studentsCartController.EditProductDetailsAsync(AppConstatnts.ACCOMODATIONSERVICES, "camera", updateDetails);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<String>(okResult.Value);
+            Assert.Equal(AppConstatnts.EDITACCOMODATIONSUCCESSFUL, returnValue);
+        }
+        [Fact]
+        public async Task EditProductDetailsAsync_Returns_FalseResult()
+        {
+            var expectedOutput = "Please select the right Category";
+
+            var productName = "KSRTC";
+            UpdateItem updateDetails = new UpdateItem();
+
+            _mockIStudentsCartManager.Setup(repo => repo.EditAccomodationService(updateDetails.ContactNumber, productName, updateDetails.Price, "Bus", updateDetails.NewContactNumber)).ReturnsAsync(expectedOutput);
+
+            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
+
+            var result = await studentsCartController.EditProductDetailsAsync("Bus", productName, updateDetails);
+
+            var okResult = Assert.IsType<ObjectResult>(result);
+            var returnValue = Assert.IsType<String>(okResult.Value);
+            Assert.Equal("Please select the right Category", returnValue);
+        }
+        [Fact]
         public async Task DeleteProductDetails_Returns_TrueResult()
         {
             var expectedOutput = AppConstatnts.DELETEBICYCLESUCCESSFUL;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+            
 
             var bicycles = new Bicycles()
             {
@@ -228,7 +315,7 @@ namespace StudentsCart.TestProject
         public async Task DeleteProductDetails_Returns_FalseResult()
         {
             var expectedOutput = AppConstatnts.DELETEDETAILSREQUIRED;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+            
 
             var bicycles = new Bicycles()
             {
@@ -252,7 +339,7 @@ namespace StudentsCart.TestProject
         public async Task LogOut_Returns_TrueResult()
         {
             var expectedOutput = new String("Added Successfully");
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+            
 
             var signup = new SignUp()
             {
@@ -275,7 +362,7 @@ namespace StudentsCart.TestProject
         public async Task LogOut_Returns_FailResult()
         {
             var expectedOutput = AppConstatnts.USERNAMEMANDATORY;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
+            
 
             var signup = new SignUp()
             {
@@ -292,88 +379,6 @@ namespace StudentsCart.TestProject
             var returnValue = Assert.IsType<String>(okResult.Value);
             Assert.Equal(AppConstatnts.USERNAMEMANDATORY, returnValue);
         }
-        [Fact]
-        public async Task AddProductAsync_Returns_TrueResult()
-        {
-            var expectedOutput = AppConstatnts.ADDACCOMODATIONSUCCESSFUL;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
-            var productName = "AccomodationServices";
-            Dictionary<String, String> details = new Dictionary<string, string>();
-            details.Add("OwnerName", "Boss");
-            details.Add("OwnerNumber", "0987215643");
-            details.Add("Address", "Kilkenny");
-            details.Add("ApartmentType", "Three Room");
-            details.Add("Price", "1200 Euro/Month");
-
-            _mockIStudentsCartManager.Setup(repo => repo.AddAccomodationService(details)).ReturnsAsync(expectedOutput);
-
-            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
-
-            var result = await studentsCartController.AddProductAsync(productName, details);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<String>(okResult.Value);
-            Assert.Equal(AppConstatnts.ADDACCOMODATIONSUCCESSFUL, returnValue);
-        }
-        [Fact]
-        public async Task AddProductAsync_Returns_FalseResult()
-        {
-            var expectedOutput = AppConstatnts.SELECTAVAILABLEPRODUCTS;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
-            var productName = "Buses";
-            Dictionary<String, String> details = new Dictionary<string, string>();
-
-            _mockIStudentsCartManager.Setup(repo => repo.AddAccomodationService(details)).ReturnsAsync(expectedOutput);
-
-            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
-
-            var result = await studentsCartController.AddProductAsync(productName, details);
-
-            var okResult = Assert.IsType<ObjectResult>(result);
-            var returnValue = Assert.IsType<String>(okResult.Value);
-            Assert.Equal(AppConstatnts.SELECTAVAILABLEPRODUCTS, returnValue);
-        }
-
-        [Fact]
-        public async Task EditProductDetailsAsync_Returns_TrueResult()
-        {
-            var expectedOutput = AppConstatnts.EDITACCOMODATIONSUCCESSFUL;
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
-            UpdateItem updateDetails = new UpdateItem()
-            {
-                ContactNumber = "0764957567",
-                NewContactNumber = "0879915157",
-                Price = "130 Euro"
-            };
-
-            _mockIStudentsCartManager.Setup(repo => repo.EditAccomodationService(updateDetails.ContactNumber, "camera", updateDetails.Price,
-                                                    AppConstatnts.ACCOMODATIONSERVICES, updateDetails.NewContactNumber)).ReturnsAsync(expectedOutput);
-
-            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
-
-            var result = await studentsCartController.EditProductDetailsAsync(AppConstatnts.ACCOMODATIONSERVICES, "camera", updateDetails);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<String>(okResult.Value);
-            Assert.Equal(AppConstatnts.EDITACCOMODATIONSUCCESSFUL, returnValue);
-        }
-        [Fact]
-        public async Task EditProductDetailsAsync_Returns_FalseResult()
-        {
-            var expectedOutput = "Please select the right Category";
-            //var _mockIStudentsCartManager = new Mock<IStudentsCartManager>();
-            var productName = "KSRTC";
-            UpdateItem updateDetails = new UpdateItem();
-
-            _mockIStudentsCartManager.Setup(repo => repo.EditAccomodationService(updateDetails.ContactNumber, productName, updateDetails.Price, "Bus", updateDetails.NewContactNumber)).ReturnsAsync(expectedOutput);
-
-            var studentsCartController = new StudentsCartController(_mockIStudentsCartManager.Object);
-
-            var result = await studentsCartController.EditProductDetailsAsync("Bus", productName, updateDetails);
-
-            var okResult = Assert.IsType<ObjectResult>(result);
-            var returnValue = Assert.IsType<String>(okResult.Value);
-            Assert.Equal("Please select the right Category", returnValue);
-        }
+        
     }
 }
