@@ -20,5 +20,9 @@ namespace StudentCart.Repository.Business.Models
         [Required]
         [StringLength(15,  ErrorMessage ="Length of the {0} must be between {2} and {1}", MinimumLength = 8)]
         public String Password { get; set; }
+
+        public Boolean IsSessionActive { get; set; }
+
+
     }
 }

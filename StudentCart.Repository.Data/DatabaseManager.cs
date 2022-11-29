@@ -15,8 +15,15 @@ namespace StudentCart.Repository.Data
 
         public DatabaseManager(String connectionString)
         {
-            client = new MongoClient(connectionString);
-            databaseName = connectionString.Split('/').ToList().Last();
+            //For Server Database
+            var settings = MongoClientSettings.FromConnectionString(connectionString);
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+            client = new MongoClient(settings);
+            databaseName = "StudentsCart";
+
+            ////For Local data base
+            //client = new MongoClient(connectionString);
+            //databaseName = connectionString.Split('/').ToList().Last();
         }
 
         public IMongoCollection<TEntity> GetCollection<TEntity>()
